@@ -699,7 +699,7 @@ Each phase follows TDD. Status markers: **PLANNED** | **IN PROGRESS** | **COMPLE
 
 ---
 
-### Phase 3: Sign Up — PLANNED
+### Phase 3: Sign Up — COMPLETED
 
 **Objective:** Deliver working user registration end-to-end.
 
@@ -994,7 +994,7 @@ When working with this PRD:
 
 **Status:** IN PROGRESS — Phase 1 complete
 
-**Current Phase:** Phase 3 — Sign Up
+**Current Phase:** Phase 4 — Sign In, Session, and Logout
 
 **Next Steps:**
 
