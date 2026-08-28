@@ -669,7 +669,7 @@ Each phase follows TDD. Status markers: **PLANNED** | **IN PROGRESS** | **COMPLE
 
 ---
 
-### Phase 2: Validation and Domain Logic — PLANNED
+### Phase 2: Validation and Domain Logic — COMPLETED
 
 **Objective:** Implement and test all validation rules and core auth domain logic in isolation.
 
@@ -994,7 +994,7 @@ When working with this PRD:
 
 **Status:** IN PROGRESS — Phase 1 complete
 
-**Current Phase:** Phase 2 — Validation and Domain Logic
+**Current Phase:** Phase 3 — Sign Up
 
 **Next Steps:**
 
