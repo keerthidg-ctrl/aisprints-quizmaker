@@ -5,15 +5,10 @@ agent conversation, so it describes only what is stable and true of the project.
 
 ## Project
 
-<!--
-Replace this section during Sprint 1 with a short description of what you are building:
-the problem, the primary user, and the current state. Two or three sentences.
-Keep it current. An out-of-date description here misleads every future conversation.
--->
-
-This is an unmodified AISprints starter. No application features have been built yet.
-The technical PRD in `ai-workspace/` is the source of truth for what is being built and
-for the current phase of work.
+aisprint-quizmaker is a web application for creating, managing, and taking quizzes.
+Sprint 1 (authentication) is complete: users can sign up, sign in, log out, and access
+a protected dashboard. Quiz features are planned for future sprints. The technical PRD
+in `ai-workspace/QUIZMAKER_TECHNICAL_PRD.md` is the source of truth for scope and phase status.
 
 ## Stack
 
@@ -48,7 +43,9 @@ Import through the `@/` alias, which maps to `src/`.
 | `npm run dev` | Local dev server on Node at `localhost:3000` |
 | `npm run preview` | Build and run on the local **Workers** runtime |
 | `npm run build` | Production build |
-| `npm run lint` | ESLint |
+| `npm run test` | Run Vitest unit tests |
+| `npm run test:watch` | Run Vitest in watch mode |
+| `npm run db:migrate:local` | Apply D1 migrations locally |
 | `npm run deploy` | Build and deploy to Cloudflare |
 | `npm run cf-typegen` | Regenerate `cloudflare-env.d.ts` after changing bindings |
 
