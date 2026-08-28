@@ -723,7 +723,7 @@ Each phase follows TDD. Status markers: **PLANNED** | **IN PROGRESS** | **COMPLE
 
 ---
 
-### Phase 4: Sign In, Session, and Logout — PLANNED
+### Phase 4: Sign In, Session, and Logout — COMPLETED
 
 **Objective:** Deliver login, session persistence, and logout.
 
@@ -994,7 +994,7 @@ When working with this PRD:
 
 **Status:** IN PROGRESS — Phase 1 complete
 
-**Current Phase:** Phase 4 — Sign In, Session, and Logout
+**Current Phase:** Phase 5 — Protected Routes and Integration
 
 **Next Steps:**
 
