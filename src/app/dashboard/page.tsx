@@ -1,17 +1,17 @@
 import { logoutAction } from "@/app/logout/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { getCurrentUser } from "@/lib/auth/session";
+import { requireAuth } from "@/lib/auth/route-guards";
 
 export default async function DashboardPage() {
-	const user = await getCurrentUser();
+	const user = await requireAuth();
 
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
 			<Card className="w-full max-w-lg">
 				<CardHeader>
 					<CardTitle>Dashboard</CardTitle>
-					<CardDescription>Welcome back{user ? `, ${user.fullName}` : ""}.</CardDescription>
+					<CardDescription>Welcome back, {user.fullName}.</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<p className="text-sm text-muted-foreground">

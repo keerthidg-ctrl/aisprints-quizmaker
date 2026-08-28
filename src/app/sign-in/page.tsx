@@ -1,10 +1,12 @@
 import { SignInForm } from "@/app/sign-in/sign-in-form";
+import { redirectIfAuthenticated } from "@/lib/auth/route-guards";
 
 type SignInPageProps = {
 	searchParams: Promise<{ registered?: string }>;
 };
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {
+	await redirectIfAuthenticated();
 	const params = await searchParams;
 	const successMessage =
 		params.registered === "1" ? "Account created successfully. Please sign in." : undefined;
