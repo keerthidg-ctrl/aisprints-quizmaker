@@ -1,2 +1,5 @@
 # Load .env.development* files when running `wrangler dev`
 NEXTJS_ENV=development
+
+# Session signing secret — generate with: openssl rand -base64 32
+AUTH_SECRET=
