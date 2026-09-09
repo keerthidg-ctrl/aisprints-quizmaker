@@ -4,17 +4,11 @@ import { McqActionsMenu } from "@/app/dashboard/mcqs/mcq-actions-menu";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { formatMcqListDescription, truncateText } from "@/lib/mcq/format";
+import { getMcqCreatePath } from "@/lib/mcq/paths";
 import { requireAuth } from "@/lib/auth/route-guards";
 import { getDb } from "@/lib/db";
 import { listMcqsByUser } from "@/lib/services/mcq-service";
-
-function truncateText(value: string, maxLength: number): string {
-	if (value.length <= maxLength) {
-		return value;
-	}
-
-	return `${value.slice(0, maxLength).trimEnd()}...`;
-}
 
 export default async function McqsPage() {
 	const user = await requireAuth();
@@ -29,19 +23,19 @@ export default async function McqsPage() {
 						<h1 className="text-2xl font-semibold tracking-tight">Multiple Choice Questions</h1>
 						<p className="text-sm text-muted-foreground">Create, edit, preview, and delete your multiple choice questions.</p>
 					</div>
-					<Button render={<Link href="/dashboard/mcqs/new" />}>Create Question</Button>
+					<Button render={<Link href={getMcqCreatePath()} />}>Create Question</Button>
 				</div>
 
 				<Card>
 					<CardHeader>
 						<CardTitle>Your Questions</CardTitle>
-						<CardDescription>{mcqs.length === 0 ? "No questions yet." : `${mcqs.length} question(s) available.`}</CardDescription>
+						<CardDescription>{formatMcqListDescription(mcqs.length)}</CardDescription>
 					</CardHeader>
 					<CardContent>
 						{mcqs.length === 0 ? (
 							<div className="rounded-lg border border-dashed p-8 text-center">
 								<p className="text-sm text-muted-foreground">You have not created any multiple choice questions yet.</p>
-								<Button className="mt-4" render={<Link href="/dashboard/mcqs/new" />}>Create your first question</Button>
+								<Button className="mt-4" render={<Link href={getMcqCreatePath()} />}>Create your first question</Button>
 							</div>
 						) : (
 							<Table>

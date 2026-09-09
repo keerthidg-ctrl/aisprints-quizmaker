@@ -7,11 +7,12 @@ import { submitAttemptAction, type AttemptActionState } from "@/app/dashboard/mc
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
-
-type PreviewChoice = {
-	id: string;
-	choiceText: string;
-};
+import { getMcqListPath } from "@/lib/mcq/paths";
+import {
+	getAttemptFeedbackMessage,
+	getAttemptFeedbackTone,
+	type PreviewChoice,
+} from "@/lib/mcq/preview";
 
 type PreviewFormProps = {
 	mcqId: string;
@@ -24,6 +25,7 @@ const initialState: AttemptActionState = {};
 
 export function PreviewForm({ mcqId, name, question, choices }: PreviewFormProps) {
 	const [state, formAction, isPending] = useActionState(submitAttemptAction.bind(null, mcqId), initialState);
+	const feedbackTone = state.isCorrect === undefined ? null : getAttemptFeedbackTone(state.isCorrect);
 
 	return (
 		<Card className="w-full max-w-3xl">
@@ -47,12 +49,12 @@ export function PreviewForm({ mcqId, name, question, choices }: PreviewFormProps
 							<div
 								role="status"
 								className={`rounded-lg border px-3 py-2 text-sm ${
-									state.isCorrect
+									feedbackTone === "success"
 										? "border-primary/30 bg-primary/10 text-primary"
 										: "border-destructive/30 bg-destructive/10 text-destructive"
 								}`}
 							>
-								{state.isCorrect ? "Correct! Your attempt was recorded." : "Incorrect. Your attempt was recorded."}
+								{getAttemptFeedbackMessage(state.isCorrect)}
 							</div>
 						) : null}
 
@@ -82,7 +84,7 @@ export function PreviewForm({ mcqId, name, question, choices }: PreviewFormProps
 					<Button type="submit" disabled={isPending}>
 						{isPending ? "Submitting..." : "Submit Answer"}
 					</Button>
-					<Button type="button" variant="outline" render={<Link href="/dashboard/mcqs" />}>
+					<Button type="button" variant="outline" render={<Link href={getMcqListPath()} />}>
 						Back to List
 					</Button>
 				</CardFooter>

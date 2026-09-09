@@ -9,73 +9,54 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+	addChoiceRow,
+	canAddChoice,
+	canRemoveChoice,
+	createDefaultChoices,
+	getInitialCorrectIndex,
+	getMcqFormTitle,
+	type McqFormValues,
+	removeChoiceAt,
+	updateChoiceAt,
+} from "@/lib/mcq/form-state";
+import { getMcqListPath } from "@/lib/mcq/paths";
 import { MAX_MCQ_CHOICES, MIN_MCQ_CHOICES } from "@/lib/mcq/validation";
-
-type McqFormChoice = {
-	text: string;
-	isCorrect: boolean;
-};
 
 type McqFormProps = {
 	mode: "create" | "edit";
 	mcqId?: string;
-	initialValues?: {
-		name: string;
-		question: string;
-		choices: McqFormChoice[];
-	};
+	initialValues?: McqFormValues;
 };
 
 const initialState: McqActionState = {};
 
-function createDefaultChoices(): McqFormChoice[] {
-	return [
-		{ text: "", isCorrect: true },
-		{ text: "", isCorrect: false },
-	];
-}
-
 export function McqForm({ mode, mcqId, initialValues }: McqFormProps) {
 	const action = mode === "create" ? createMcqAction : updateMcqAction.bind(null, mcqId ?? "");
 	const [state, formAction, isPending] = useActionState(action, initialState);
-	const [choices, setChoices] = useState<McqFormChoice[]>(initialValues?.choices ?? createDefaultChoices());
-	const [correctIndex, setCorrectIndex] = useState(
-		initialValues?.choices.findIndex((choice) => choice.isCorrect) ?? 0,
-	);
+	const [choices, setChoices] = useState(initialValues?.choices ?? createDefaultChoices());
+	const [correctIndex, setCorrectIndex] = useState(getInitialCorrectIndex(initialValues?.choices ?? createDefaultChoices()));
 
 	function updateChoiceText(index: number, text: string) {
-		setChoices((current) => current.map((choice, choiceIndex) => (choiceIndex === index ? { ...choice, text } : choice)));
+		setChoices((current) => updateChoiceAt(current, index, text));
 	}
 
 	function addChoice() {
-		if (choices.length >= MAX_MCQ_CHOICES) {
-			return;
-		}
-
-		setChoices((current) => [...current, { text: "", isCorrect: false }]);
+		setChoices((current) => addChoiceRow(current));
 	}
 
 	function removeChoice(index: number) {
-		if (choices.length <= MIN_MCQ_CHOICES) {
-			return;
-		}
-
-		setChoices((current) => current.filter((_, choiceIndex) => choiceIndex !== index));
-		setCorrectIndex((current) => {
-			if (current === index) {
-				return 0;
-			}
-			if (current > index) {
-				return current - 1;
-			}
-			return current;
+		setChoices((current) => {
+			const result = removeChoiceAt(current, index, correctIndex);
+			setCorrectIndex(result.correctIndex);
+			return result.choices;
 		});
 	}
 
 	return (
 		<Card className="w-full max-w-3xl">
 			<CardHeader>
-				<CardTitle>{mode === "create" ? "Create Multiple Choice Question" : "Edit Multiple Choice Question"}</CardTitle>
+				<CardTitle>{getMcqFormTitle(mode)}</CardTitle>
 				<CardDescription>
 					Provide a name, question text, and between {MIN_MCQ_CHOICES} and {MAX_MCQ_CHOICES} answer choices. Mark one
 					choice as correct.
@@ -153,7 +134,7 @@ export function McqForm({ mode, mcqId, initialValues }: McqFormProps) {
 										type="button"
 										variant="outline"
 										onClick={() => removeChoice(index)}
-										disabled={choices.length <= MIN_MCQ_CHOICES}
+										disabled={!canRemoveChoice(choices.length)}
 									>
 										Remove
 									</Button>
@@ -162,7 +143,7 @@ export function McqForm({ mode, mcqId, initialValues }: McqFormProps) {
 
 							<FieldError errors={state.errors?.choices ? [{ message: state.errors.choices }] : undefined} />
 
-							<Button type="button" variant="outline" onClick={addChoice} disabled={choices.length >= MAX_MCQ_CHOICES}>
+							<Button type="button" variant="outline" onClick={addChoice} disabled={!canAddChoice(choices.length)}>
 								Add Choice
 							</Button>
 						</div>
@@ -172,7 +153,7 @@ export function McqForm({ mode, mcqId, initialValues }: McqFormProps) {
 					<Button type="submit" disabled={isPending}>
 						{isPending ? "Saving..." : "Save"}
 					</Button>
-					<Button type="button" variant="outline" render={<Link href="/dashboard/mcqs" />}>
+					<Button type="button" variant="outline" render={<Link href={getMcqListPath()} />}>
 						Cancel
 					</Button>
 				</CardFooter>

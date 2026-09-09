@@ -200,11 +200,24 @@ Migration file: `migrations/0003_init_mcq_tables.sql`
 1. Add link from dashboard to `/dashboard/mcqs`
 2. Build list page with shadcn table
 3. Add row actions dropdown and delete confirmation dialog
+4. Add list formatting helpers and component tests for the actions menu
 
 **Deliverables:**
 - `src/app/dashboard/page.tsx`
 - `src/app/dashboard/mcqs/page.tsx`
 - `src/app/dashboard/mcqs/mcq-actions-menu.tsx`
+- `src/lib/mcq/format.ts`
+- `src/lib/mcq/format.test.ts`
+- `src/lib/mcq/paths.ts`
+- `src/lib/mcq/paths.test.ts`
+- `src/app/dashboard/mcqs/mcq-delete-dialog.tsx`
+- `src/app/dashboard/mcqs/mcq-delete-dialog.test.tsx`
+
+**Tests first (list page):**
+- `truncateText` shortens long question text for the table
+- `formatMcqListDescription` handles empty and non-empty counts
+- `getMcqEditPath` / `getMcqPreviewPath` build row action URLs
+- `McqDeleteDialog` confirms deletion, refreshes on success, and surfaces errors on failure
 
 ---
 
@@ -216,11 +229,22 @@ Migration file: `migrations/0003_init_mcq_tables.sql`
 1. Build client form with dynamic choice rows (2–6)
 2. Add create page and edit page
 3. Wire form to Server Actions with validation feedback
+4. Extract form state helpers and add component/unit tests
 
 **Deliverables:**
 - `src/app/dashboard/mcqs/mcq-form.tsx`
+- `src/app/dashboard/mcqs/mcq-form.test.tsx`
 - `src/app/dashboard/mcqs/new/page.tsx`
 - `src/app/dashboard/mcqs/[id]/edit/page.tsx`
+- `src/lib/mcq/form-state.ts`
+- `src/lib/mcq/form-state.test.ts`
+
+**Tests first (create/edit form):**
+- Default form starts with two choices and correct hidden field values
+- Add/remove choice buttons respect the 2–6 choice limits
+- Correct-answer radio updates `correctChoiceIndex`
+- Edit mode pre-fills values from `mapMcqRecordToFormValues`
+- Cancel links back to the MCQ list
 
 ---
 
@@ -232,10 +256,20 @@ Migration file: `migrations/0003_init_mcq_tables.sql`
 1. Build preview page with answer submission
 2. Record attempts in `mcq_attempts`
 3. Show correct/incorrect feedback after submission
+4. Extract preview helpers and add component/unit tests
 
 **Deliverables:**
 - `src/app/dashboard/mcqs/[id]/preview/page.tsx`
 - `src/app/dashboard/mcqs/[id]/preview/preview-form.tsx`
+- `src/app/dashboard/mcqs/[id]/preview/preview-form.test.tsx`
+- `src/lib/mcq/preview.ts`
+- `src/lib/mcq/preview.test.ts`
+
+**Tests first (preview and attempts):**
+- `mapMcqToPreviewChoices` maps service records into preview props
+- `getAttemptFeedbackMessage` returns correct/incorrect copy
+- `PreviewForm` renders question choices and back link
+- Submitting an answer shows success or error feedback via `submitAttemptAction`
 
 ---
 
@@ -247,11 +281,26 @@ Migration file: `migrations/0003_init_mcq_tables.sql`
 1. Run `npm run test`
 2. Run `npm run lint`
 3. Run `npm run build`
-4. Smoke test list/create/edit/preview/delete on local dev server
+4. Add service-layer integration test for the full MCQ lifecycle
+5. Smoke test list/create/edit/preview/delete on local dev server
 
 **Deliverables:**
 - Passing test, lint, and build commands
+- `src/lib/mcq/integration.test.ts` — create → list → edit → attempt → delete flow
 - Updated acceptance criteria below
+
+**Verification results (September 9, 2026):**
+- `npm run test` — 123 tests passing (18 files)
+- `npm run lint` — no errors
+- `npm run build` — successful; all MCQ routes present
+- `npm run db:migrate:local` — `0003_init_mcq_tables` applied locally
+
+**Manual smoke test checklist:**
+- [ ] Sign in → Dashboard → **Manage Multiple Choice Questions**
+- [ ] Create a question with 2+ choices and save
+- [ ] Edit the question and confirm changes appear in the list
+- [ ] Preview the question, submit an answer, see correct/incorrect feedback
+- [ ] Delete the question from the row actions menu
 
 ---
 
@@ -270,6 +319,7 @@ Migration file: `migrations/0003_init_mcq_tables.sql`
 - `src/app/dashboard/mcqs/mcq-form.tsx` — Shared create/edit form
 - `src/app/dashboard/mcqs/mcq-actions-menu.tsx` — Row actions and delete dialog
 - `src/app/dashboard/mcqs/[id]/preview/preview-form.tsx` — Preview and attempt submission
+- `src/lib/mcq/integration.test.ts` — End-to-end service lifecycle integration test
 
 ### Implementation Patterns
 
@@ -360,6 +410,6 @@ When working with this PRD:
 ## Current Status
 
 **Last Updated:** September 9, 2026
-**Current Phase:** Phase 7 — Integration and Verification
+**Current Phase:** None (MCQ module complete)
 **Status:** COMPLETED
-**Next Steps:** Manual smoke test via `npm run dev` or `npm run preview`; begin next sprint feature when ready
+**Next Steps:** Run the manual smoke test checklist above via `npm run dev`; commit remaining Phase 4–7 changes when approved

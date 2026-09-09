@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { PreviewForm } from "@/app/dashboard/mcqs/[id]/preview/preview-form";
+import { mapMcqToPreviewChoices } from "@/lib/mcq/preview";
 import { requireAuth } from "@/lib/auth/route-guards";
 import { getDb } from "@/lib/db";
 import { findMcqById } from "@/lib/services/mcq-service";
@@ -25,10 +26,7 @@ export default async function PreviewMcqPage({ params }: PreviewMcqPageProps) {
 				mcqId={mcq.id}
 				name={mcq.name}
 				question={mcq.question}
-				choices={mcq.choices.map((choice) => ({
-					id: choice.id,
-					choiceText: choice.choiceText,
-				}))}
+				choices={mapMcqToPreviewChoices(mcq.choices)}
 			/>
 		</div>
 	);

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { McqForm } from "@/app/dashboard/mcqs/mcq-form";
+import { mapMcqRecordToFormValues } from "@/lib/mcq/form-state";
 import { requireAuth } from "@/lib/auth/route-guards";
 import { getDb } from "@/lib/db";
 import { findMcqById } from "@/lib/services/mcq-service";
@@ -21,18 +22,7 @@ export default async function EditMcqPage({ params }: EditMcqPageProps) {
 
 	return (
 		<div className="flex min-h-screen items-start justify-center bg-background px-4 py-12">
-			<McqForm
-				mode="edit"
-				mcqId={mcq.id}
-				initialValues={{
-					name: mcq.name,
-					question: mcq.question,
-					choices: mcq.choices.map((choice) => ({
-						text: choice.choiceText,
-						isCorrect: choice.isCorrect,
-					})),
-				}}
-			/>
+			<McqForm mode="edit" mcqId={mcq.id} initialValues={mapMcqRecordToFormValues(mcq)} />
 		</div>
 	);
 }
