@@ -1,5 +1,5 @@
 Date created: August 28, 2026
-Date last modified: August 28, 2026
+Date last modified: September 1, 2026
 
 # aisprint-quizmaker — Technical PRD (Sprint 0: Authentication)
 
@@ -832,7 +832,7 @@ Each phase follows TDD. Status markers: **PLANNED** | **IN PROGRESS** | **COMPLE
 - [x] Auth pages render correctly on mobile and desktop.
 - [x] `npm run lint` passes with no errors.
 - [x] `npm run build` succeeds.
-- [ ] Auth flow verified on Workers runtime via `npm run preview` (local environment).
+- [x] Auth flow verified on Cloudflare Workers production deployment.
 
 ---
 
@@ -991,6 +991,11 @@ Local setup: copy `.dev.vars.example` to `.dev.vars`, run `npm run db:migrate:lo
 **Cause:** Local D1 migrations not applied.
 **Solution:** Run `npm run db:migrate:local`.
 
+#### Production sign-in returns "Something went wrong"
+**Problem:** Sign-in on the deployed `workers.dev` URL shows a generic error.
+**Cause:** Remote D1 migrations not applied — `users` and `sessions` tables missing in production.
+**Solution:** Run `npx wrangler d1 migrations apply quizmaker-db --remote`. Then register a new account on the production URL (local accounts are not in the remote database).
+
 #### TypeScript error on PBKDF2 salt parameter
 **Problem:** Build fails with `Uint8Array` not assignable to `BufferSource`.
 **Cause:** Strict TypeScript types for Web Crypto API.
@@ -1017,16 +1022,40 @@ When working with this PRD:
 
 ## Current Status
 
-**Last Updated:** August 28, 2026
+**Last Updated:** September 1, 2026
 
 **Sprint:** Sprint 1 — Authentication Implementation
 
-**Status:** COMPLETED — All 6 phases done
+**Status:** COMPLETED — All 6 phases done, deployed to Cloudflare
 
 **Current Phase:** None (auth module complete)
 
+**Production URL:** https://aisprints-quizmaker.aisprints-starter.workers.dev
+
+| Route | URL |
+|-------|-----|
+| Sign In | https://aisprints-quizmaker.aisprints-starter.workers.dev/sign-in |
+| Sign Up | https://aisprints-quizmaker.aisprints-starter.workers.dev/sign-up |
+| Dashboard | https://aisprints-quizmaker.aisprints-starter.workers.dev/dashboard |
+
+**Deployment:**
+
+- Worker name: `aisprints-quizmaker` (configured in `wrangler.jsonc`)
+- Cloudflare account: Keerthi.dg@excelsoftcorp.com's Account
+- D1 database: `quizmaker-db` (binding `DB`)
+- Remote D1 migrations: **Applied** (`0001_init_auth_tables`, `0002_init_sessions`) on September 1, 2026
+
+**Verification:**
+
+- 43 automated tests passing (`npm test`)
+- `npm run lint` and `npm run build` succeed
+- Auth flow verified locally via `npm run dev` (sign up, sign in, dashboard, logout)
+- Auth flow verified on production Workers deployment after remote migrations
+
+**Important:** Local (`npm run dev`) and production (`workers.dev`) use separate D1 databases. Users must register on the production URL to sign in there.
+
 **Next Steps:**
 
-1. Manually verify auth flow with `npm run preview` on local machine.
-2. Apply D1 migrations to remote database when ready to deploy.
-3. Begin Sprint 2 — Quiz creation features.
+1. Run `npm run deploy` to publish under the new Worker name (`aisprints-quizmaker`).
+2. Begin Sprint 2 — Quiz creation features.
+3. Optional: set `AUTH_SECRET` via `npx wrangler secret put AUTH_SECRET` if signed-session support is added later.

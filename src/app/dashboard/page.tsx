@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { logoutAction } from "@/app/logout/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,10 +15,13 @@ export default async function DashboardPage() {
 					<CardTitle>Dashboard</CardTitle>
 					<CardDescription>Welcome back, {user.fullName}.</CardDescription>
 				</CardHeader>
-				<CardContent>
+				<CardContent className="space-y-4">
 					<p className="text-sm text-muted-foreground">
-						Quiz features are coming in a future sprint. You are signed in and ready to go.
+						Manage your multiple choice questions or sign out when you are done.
 					</p>
+					<Button className="w-full" render={<Link href="/dashboard/mcqs" />}>
+						Manage Multiple Choice Questions
+					</Button>
 				</CardContent>
 				<CardFooter>
 					<form action={logoutAction}>
