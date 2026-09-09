@@ -155,10 +155,17 @@ Migration file: `migrations/0003_init_mcq_tables.sql`
 2. Implement `src/lib/mcq/validation.ts`
 3. Write failing tests for MCQ service CRUD and attempts
 4. Implement `src/lib/services/mcq-service.ts`
+5. Add failure-path and cross-user isolation tests for the service layer
 
 **Deliverables:**
 - `src/lib/mcq/validation.test.ts`
 - `src/lib/services/mcq-service.test.ts`
+
+**Tests first (service failure paths):**
+- `findMcqById` returns `null` for missing MCQs and for MCQs owned by another user
+- `updateMcq` / `deleteMcq` return `{ error: "not_found" }` for missing or cross-user access
+- `recordAttempt` returns `not_found`, `invalid_choice`, and `record_failed` as appropriate
+- `createMcq` returns `{ error: "create_failed" }` when persistence fails
 
 ---
 
@@ -170,9 +177,18 @@ Migration file: `migrations/0003_init_mcq_tables.sql`
 1. Implement `createMcqAction`, `updateMcqAction`, `deleteMcqAction`
 2. Implement `submitAttemptAction` for preview mode
 3. Scope all operations to the authenticated user
+4. Add server action tests for validation, auth wiring, service errors, and redirects
 
 **Deliverables:**
 - `src/app/dashboard/mcqs/actions.ts`
+- `src/app/dashboard/mcqs/actions.test.ts`
+
+**Tests first (server action paths):**
+- Validation failures return field errors without calling the service
+- Successful create/update redirect to `/dashboard/mcqs`
+- Service `not_found` / persistence failures map to user-facing `formError` messages
+- `deleteMcqAction` returns structured `{ success, error? }` results
+- `submitAttemptAction` requires a choice and returns `isCorrect` on success
 
 ---
 

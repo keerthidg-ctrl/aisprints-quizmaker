@@ -1,0 +1,35 @@
+---
+description: Require explicit user approval before committing or pushing to the current branch
+alwaysApply: true
+---
+
+# Git Commit and Push Workflow
+
+Do not commit or push unless the user has explicitly asked you to in the current conversation.
+
+## Before committing
+
+1. Finish the requested work and report what changed.
+2. Wait for the user to review and approve committing.
+3. If approval is unclear, ask: "Should I commit these changes to the current branch?"
+
+## Before pushing
+
+1. Commit only after explicit user approval.
+2. Push only after the user has approved the commit (or explicitly asked to commit and push).
+3. Push to the **current branch** unless the user names a different branch.
+4. Do not force-push to `main` or `master` without an explicit user request.
+
+## When the user approves commit and push
+
+1. Run `git status`, `git diff`, and `git log` to understand the changes and commit message style.
+2. Stage only relevant files. Do not commit secrets (`.dev.vars`, credentials).
+3. Write a concise commit message focused on why the change was made.
+4. Commit, then push with `git push` (use `-u origin <branch>` if the branch has no upstream).
+5. Report the commit hash, branch name, and remote status.
+
+## Do not
+
+- Create commits proactively after implementing a feature.
+- Push without user approval, even if a commit already exists locally.
+- Amend commits unless the user explicitly requests it and git safety rules allow it.
