@@ -1,5 +1,5 @@
 Date created: August 28, 2026
-Date last modified: September 1, 2026
+Date last modified: September 10, 2026
 
 # aisprint-quizmaker — Technical PRD (Sprint 0: Authentication)
 
@@ -1022,13 +1022,13 @@ When working with this PRD:
 
 ## Current Status
 
-**Last Updated:** September 1, 2026
+**Last Updated:** September 10, 2026
 
-**Sprint:** Sprint 1 — Authentication Implementation
+**Sprint:** Sprint 0 (Authentication) — COMPLETED; Sprint 2 (MCQ) — COMPLETED
 
-**Status:** COMPLETED — All 6 phases done, deployed to Cloudflare
+**Status:** Authentication and MCQ modules complete, deployed to Cloudflare
 
-**Current Phase:** None (auth module complete)
+**Current Phase:** None
 
 **Production URL:** https://aisprints-quizmaker.aisprints-starter.workers.dev
 
@@ -1037,17 +1037,18 @@ When working with this PRD:
 | Sign In | https://aisprints-quizmaker.aisprints-starter.workers.dev/sign-in |
 | Sign Up | https://aisprints-quizmaker.aisprints-starter.workers.dev/sign-up |
 | Dashboard | https://aisprints-quizmaker.aisprints-starter.workers.dev/dashboard |
+| MCQ List | https://aisprints-quizmaker.aisprints-starter.workers.dev/dashboard/mcqs |
 
 **Deployment:**
 
 - Worker name: `aisprints-quizmaker` (configured in `wrangler.jsonc`)
 - Cloudflare account: Keerthi.dg@excelsoftcorp.com's Account
 - D1 database: `quizmaker-db` (binding `DB`)
-- Remote D1 migrations: **Applied** (`0001_init_auth_tables`, `0002_init_sessions`) on September 1, 2026
+- Remote D1 migrations: **Applied** (`0001_init_auth_tables`, `0002_init_sessions`, `0003_init_mcq_tables`) on September 10, 2026
 
 **Verification:**
 
-- 43 automated tests passing (`npm test`)
+- 123 automated tests passing (`npm test`)
 - `npm run lint` and `npm run build` succeed
 - Auth flow verified locally via `npm run dev` (sign up, sign in, dashboard, logout)
 - Auth flow verified on production Workers deployment after remote migrations
@@ -1056,6 +1057,6 @@ When working with this PRD:
 
 **Next Steps:**
 
-1. Run `npm run deploy` to publish under the new Worker name (`aisprints-quizmaker`).
-2. Begin Sprint 2 — Quiz creation features.
-3. Optional: set `AUTH_SECRET` via `npx wrangler secret put AUTH_SECRET` if signed-session support is added later.
+1. Merge `feature/mcq_technical_crud_branch` into `main` via pull request.
+2. See `ai-workspace/MCQ_TECHNICAL_PRD.md` for Sprint 2 (MCQ) implementation details and production verification.
+3. Begin next sprint when ready (full quiz assembly).

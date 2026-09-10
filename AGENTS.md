@@ -6,9 +6,10 @@ agent conversation, so it describes only what is stable and true of the project.
 ## Project
 
 aisprint-quizmaker is a web application for creating, managing, and taking quizzes.
-Sprint 1 (authentication) is complete: users can sign up, sign in, log out, and access
-a protected dashboard. Quiz features are planned for future sprints. The technical PRD
-in `ai-workspace/QUIZMAKER_TECHNICAL_PRD.md` is the source of truth for scope and phase status.
+Sprint 0 (authentication) and Sprint 2 (MCQ CRUD and preview) are complete and deployed
+to production. Full quiz assembly is planned for a future sprint. See
+`ai-workspace/QUIZMAKER_TECHNICAL_PRD.md` and `ai-workspace/MCQ_TECHNICAL_PRD.md` for scope
+and phase status.
 
 ## Stack
 
@@ -19,8 +20,8 @@ in `ai-workspace/QUIZMAKER_TECHNICAL_PRD.md` is the source of truth for scope an
 - **TypeScript** in strict mode
 - **Wrangler** for Cloudflare configuration, secrets, and deployment
 
-No database, authentication, testing framework, or AI SDK is installed yet. Do not
-write code that imports one without adding it first and telling the user.
+D1, authentication, and Vitest are installed. No AI SDK is installed yet. Do not write
+code that imports a new dependency without adding it first and telling the user.
 
 ## Layout
 

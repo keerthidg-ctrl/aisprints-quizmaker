@@ -1,5 +1,5 @@
 Date created: September 9, 2026
-Date last modified: September 9, 2026
+Date last modified: September 10, 2026
 
 # Multiple Choice Questions — Technical PRD (Sprint 2)
 
@@ -283,24 +283,33 @@ Migration file: `migrations/0003_init_mcq_tables.sql`
 3. Run `npm run build`
 4. Add service-layer integration test for the full MCQ lifecycle
 5. Smoke test list/create/edit/preview/delete on local dev server
+6. Deploy to production and apply remote D1 migrations
+7. Verify MCQ flows on production Workers deployment
 
 **Deliverables:**
 - Passing test, lint, and build commands
 - `src/lib/mcq/integration.test.ts` — create → list → edit → attempt → delete flow
+- Production deployment with remote migration applied
 - Updated acceptance criteria below
 
-**Verification results (September 9, 2026):**
-- `npm run test` — 123 tests passing (18 files)
+**Automated verification (September 9, 2026):**
+- `npm run test` — 123 tests passing (19 files)
 - `npm run lint` — no errors
 - `npm run build` — successful; all MCQ routes present
 - `npm run db:migrate:local` — `0003_init_mcq_tables` applied locally
 
-**Manual smoke test checklist:**
-- [ ] Sign in → Dashboard → **Manage Multiple Choice Questions**
-- [ ] Create a question with 2+ choices and save
-- [ ] Edit the question and confirm changes appear in the list
-- [ ] Preview the question, submit an answer, see correct/incorrect feedback
-- [ ] Delete the question from the row actions menu
+**Production deployment (September 10, 2026):**
+- `npx wrangler d1 migrations apply quizmaker-db --remote` — `0003_init_mcq_tables` applied
+- `npm run deploy` — Worker `aisprints-quizmaker` deployed
+- **Production URL:** https://aisprints-quizmaker.aisprints-starter.workers.dev
+- **Version ID:** `2e10c1f4-e97b-48d3-87d2-1f4a399362ec`
+
+**Manual smoke test checklist (verified in production, September 10, 2026):**
+- [x] Sign in → Dashboard → **Manage Multiple Choice Questions**
+- [x] Create a question with 2+ choices and save
+- [x] Edit the question and confirm changes appear in the list
+- [x] Preview the question, submit an answer, see correct/incorrect feedback
+- [x] Delete the question from the row actions menu
 
 ---
 
@@ -348,16 +357,19 @@ Migration file: `migrations/0003_init_mcq_tables.sql`
 - [x] Users cannot access another user's MCQs
 - [x] Validation errors are shown for invalid form input
 - [x] `npm run test`, `npm run lint`, and `npm run build` pass
+- [x] Remote D1 migration `0003_init_mcq_tables` applied to production
+- [x] Production deployment verified: create, update, delete, and preview MCQs work end-to-end
 
 ---
 
 ## Success Metrics
 
-| Metric | Target | How Measured |
-|--------|--------|--------------|
-| MCQ create/edit completion | Form saves without server error | Manual smoke test |
-| Validation coverage | All MCQ validation rules have unit tests | `npm run test` |
-| Data isolation | Queries always filter by `user_id` | Code review + service tests |
+| Metric | Target | How Measured | Status |
+|--------|--------|--------------|--------|
+| MCQ create/edit completion | Form saves without server error | Manual smoke test on production | Met (September 10, 2026) |
+| MCQ preview attempts | Attempt recorded with correct/incorrect feedback | Production preview flow | Met (September 10, 2026) |
+| Validation coverage | All MCQ validation rules have unit tests | `npm run test` | Met (123 tests) |
+| Data isolation | Queries always filter by `user_id` | Code review + service tests | Met |
 
 ---
 
@@ -391,7 +403,35 @@ Migration file: `migrations/0003_init_mcq_tables.sql`
 
 ## Troubleshooting Guide
 
-_No entries yet._
+### Momentary glitch after production deploy or remote migration
+
+**Problem:** Brief errors or failed requests immediately after deploying or applying the remote MCQ migration.
+
+**Cause:** Worker rollout and D1 schema changes can overlap briefly. Requests may hit the new Worker before the remote database migration completes, or during asset propagation.
+
+**Solution:** Wait a few seconds and retry. If errors persist, confirm remote migrations are applied:
+
+```bash
+npx wrangler d1 migrations list quizmaker-db --remote
+```
+
+All three migrations (`0001_init_auth_tables`, `0002_init_sessions`, `0003_init_mcq_tables`) should show as applied.
+
+### MCQ actions fail on production but work locally
+
+**Problem:** Create, edit, or delete MCQs fails on `workers.dev` but works with `npm run dev`.
+
+**Cause:** Local and production use separate D1 databases. The remote database may be missing the MCQ tables.
+
+**Solution:** Apply remote migrations with `npx wrangler d1 migrations apply quizmaker-db --remote`, then redeploy if needed.
+
+### Production account does not exist locally
+
+**Problem:** User can sign in locally but not on production (or vice versa).
+
+**Cause:** Auth users are stored per D1 instance. Local and remote databases are independent.
+
+**Solution:** Register a new account on the production sign-up URL before testing MCQ features there.
 
 ---
 
@@ -403,13 +443,47 @@ When working with this PRD:
 2. Follow the existing service-layer and Server Action patterns from authentication
 3. Update phase status markers as work progresses
 4. Mark acceptance criteria when verified
-5. Apply D1 migrations locally only
+5. Apply D1 migrations locally with `npm run db:migrate:local`; remote migrations require explicit user approval
 
 ---
 
 ## Current Status
 
-**Last Updated:** September 9, 2026
+**Last Updated:** September 10, 2026
+
+**Sprint:** Sprint 2 — Multiple Choice Questions
+
+**Status:** COMPLETED — All 7 phases done, deployed to production, smoke tested
+
 **Current Phase:** None (MCQ module complete)
-**Status:** COMPLETED
-**Next Steps:** Run the manual smoke test checklist above via `npm run dev`; commit remaining Phase 4–7 changes when approved
+
+**Production URL:** https://aisprints-quizmaker.aisprints-starter.workers.dev
+
+| Route | URL |
+|-------|-----|
+| Sign In | https://aisprints-quizmaker.aisprints-starter.workers.dev/sign-in |
+| Sign Up | https://aisprints-quizmaker.aisprints-starter.workers.dev/sign-up |
+| Dashboard | https://aisprints-quizmaker.aisprints-starter.workers.dev/dashboard |
+| MCQ List | https://aisprints-quizmaker.aisprints-starter.workers.dev/dashboard/mcqs |
+| Create MCQ | https://aisprints-quizmaker.aisprints-starter.workers.dev/dashboard/mcqs/new |
+
+**Deployment:**
+
+- Worker name: `aisprints-quizmaker` (configured in `wrangler.jsonc`)
+- D1 database: `quizmaker-db` (binding `DB`)
+- Remote D1 migrations: **Applied** (`0001_init_auth_tables`, `0002_init_sessions`, `0003_init_mcq_tables`) on September 10, 2026
+- Deployed via `npm run deploy` on September 10, 2026
+
+**Verification:**
+
+- 123 automated tests passing (`npm run test`)
+- `npm run lint` and `npm run build` succeed
+- Production smoke test passed: create, update, delete, and preview MCQs
+- Brief post-deploy glitch observed and resolved without code changes
+
+**Git branch:** `feature/mcq_technical_crud_branch` (pushed to remote)
+
+**Next Steps:**
+
+1. Open a pull request to merge `feature/mcq_technical_crud_branch` into `main`
+2. Begin next sprint feature when ready (full quiz assembly is out of scope for Sprint 2)
